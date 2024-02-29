@@ -80,6 +80,7 @@ contract Lib is Ownable {
         for (uint i; i < amount; i++) {
             uint price = (uint(keccak256(abi.encodePacked(block.number, minted, block.timestamp, lastUser))) % 100) * 10**15;
             bookPrice[minted] = price;
+            ownerOf[minted] = address(this);
             minted++;
         }
     }
@@ -88,6 +89,7 @@ contract Lib is Ownable {
     function createBookWithFixPrice(uint amount, uint price) external onlyOwner {
         for (uint i; i < amount; i++) {
             bookPrice[minted] = price;
+            ownerOf[minted] = address(this);
             minted++;
         }
     }
@@ -99,7 +101,7 @@ contract Lib is Ownable {
         address user = msg.sender;
 
         require(alreadyHave[user] == false, "Already have");
-        require(ownerOf[id] == address(0), "this book has already been purchased.");
+        require(ownerOf[id] == address(this), "this book has already been purchased or nonexistent");
         require(amount >= price, "The amount sent must equal or exceed the cost of the book");
         ownerOf[id] = user;
         alreadyHave[user] = true;
